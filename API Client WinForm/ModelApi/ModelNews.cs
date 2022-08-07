@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace API_Client_WinForm.ModelApi
 {
-    public class ModelNews
-    {
 
-        public class Rootobject
+        public class ModelNews
         {
             public string status { get; set; }
             public string copyright { get; set; }
@@ -62,4 +60,4 @@ namespace API_Client_WinForm.ModelApi
         }
 
     }
-}
+

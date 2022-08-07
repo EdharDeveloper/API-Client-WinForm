@@ -1,4 +1,5 @@
-﻿using System;
+﻿using API_Client_WinForm.ModelApi;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,9 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace API_Client_WinForm
-{
+{  
     public partial class Form1 : Form
     {
+
         APIServes _restClient;
         public Form1()
         {
@@ -27,11 +29,25 @@ namespace API_Client_WinForm
 
         private async void  button1_Click(object sender, EventArgs e)
         {
-            
+           
             try
             {
-                string json = await _restClient.GetArticlsLastDayAsync(PeriodType.oneday);
-                textBox1.Text = json;
+                
+                ModelNews model = await _restClient.GetArticlsLastDayAsync(PeriodType.oneday);
+                StringBuilder str = new StringBuilder();
+                for (int i = 0; i < model.results.Length; i++)
+                {
+                        str.Append(model.results[i].section+ 
+                            Environment.NewLine+"<<"+model.results[i].title+">>"+
+                            "  :"+ model.results[i].source+Environment.NewLine
+                                    +"Date: " + model.results[i].published_date+"\n");
+                    
+                         //textBox1.Paste(Environment.NewLine);
+                    
+                    
+                }
+                textBox1.Text = str.ToString();
+                //textBox1.Paste(
             }
             catch
             {

@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using API_Client_WinForm.ModelApi;
+using System.IO;
+using System.Text.Json;
 
 namespace API_Client_WinForm
 {
@@ -15,6 +18,8 @@ namespace API_Client_WinForm
     }
     public class APIServes
     {
+       
+        
         private HttpClient client;
 
        private readonly string _baseUrl = "https://api.nytimes.com/svc/mostpopular/v2/";
@@ -25,8 +30,9 @@ namespace API_Client_WinForm
              client= new HttpClient();
         }
 
-        protected async Task<string> GetRequest(string EndPoint)
+        protected async Task<ModelNews> GetRequest(string EndPoint)
         {
+
             HttpRequestMessage requestMessage = new HttpRequestMessage
                 (HttpMethod.Get, _baseUrl + EndPoint + "?api-key=" + _apiKey);
             requestMessage.Headers.Add("Accept", "application/json");
@@ -37,16 +43,28 @@ namespace API_Client_WinForm
                 {
                     throw new Exception("Error request");
                 }
-                return await responseMessage.Content.ReadAsStringAsync();
+                var stream = await responseMessage.Content.ReadAsStreamAsync();
+                StreamReader reader = new StreamReader(stream);
+                string result=await reader.ReadToEndAsync();
+                ModelNews? model = JsonSerializer.Deserialize<ModelNews>(result);
+
+                if (model == null)
+                {
+                    throw new Exception("Error JSON");
+                }
+                return model;
+                
+                
+
+
             }
         }
-        public async Task<string> GetArticlsLastDayAsync(PeriodType period)
+        public async Task<ModelNews> GetArticlsLastDayAsync(PeriodType period)
         {
             int per = (int)period;
             string request = "emailed/" + per + ".json";
 
             return await GetRequest(request);
-
 
         }
 
